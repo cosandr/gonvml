@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mindprince/gonvml"
+	"github.com/cosandr/gonvml"
 )
 
 func main() {
@@ -137,6 +137,13 @@ func main() {
 			return
 		}
 		fmt.Printf("\tutilization.decoder: %d\n", decoderUtilization)
+
+		clockCurrent, err := dev.Clock(gonvml.ClockIDCurrent, gonvml.ClockTypeGraphics)
+		if err != nil {
+			fmt.Printf("\tdev.Clock() error: %v\n", err)
+			return
+		}
+		fmt.Printf("\tclock.current: %d\n", clockCurrent)
 
 		modeStats, err := dev.AccountingMode()
 		if err != nil {
