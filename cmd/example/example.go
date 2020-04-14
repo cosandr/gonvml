@@ -138,12 +138,26 @@ func main() {
 		}
 		fmt.Printf("\tutilization.decoder: %d\n", decoderUtilization)
 
-		clockCurrent, err := dev.Clock(gonvml.ClockIDCurrent, gonvml.ClockTypeGraphics)
-		if err != nil {
-			fmt.Printf("\tdev.Clock() error: %v\n", err)
-			return
+		for idName, idVal := range map[string]uint{
+			"current":     gonvml.ClockIDCurrent,
+			"app_default": gonvml.ClockIDAppClockDefault,
+			"app_target":  gonvml.ClockIDAppClockTarget,
+			"boost_max":   gonvml.ClockIDCustomerBoostMax,
+			"count":       gonvml.ClockIDCount} {
+			for typeName, typeVal := range map[string]uint{
+				"graphics": gonvml.ClockTypeGraphics,
+				"sm":       gonvml.ClockTypeSm,
+				"mem":      gonvml.ClockTypeMem,
+				"video":    gonvml.ClockTypeVideo,
+				"count":    gonvml.ClockTypeCount} {
+				val, valErr := dev.Clock(idVal, typeVal)
+				if valErr != nil || val <= 0 {
+					// fmt.Printf("\tclock.%s.%s: Error (%s) or no value (%d)\n", idName, typeName, valErr, val)
+				} else {
+					fmt.Printf("\tclock.%s.%s: %d\n", idName, typeName, val)
+				}
+			}
 		}
-		fmt.Printf("\tclock.current: %d\n", clockCurrent)
 
 		modeStats, err := dev.AccountingMode()
 		if err != nil {
