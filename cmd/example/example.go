@@ -159,6 +159,18 @@ func main() {
 			}
 		}
 
+		for countName, countVal := range map[string]uint{
+			"txbytes": gonvml.PcieUtilTxBytes,
+			"rxbytes": gonvml.PcieUtilRxBytes,
+			"count":   gonvml.PcieUtilCount} {
+			val, valErr := dev.PcieThroughput(countVal)
+			if valErr != nil || val <= 0 {
+				fmt.Printf("\tpcie.%s: Error (%s) or no value (%d)\n", countName, valErr, val)
+			} else {
+				fmt.Printf("\tpcie.%s: %d\n", countName, val)
+			}
+		}
+
 		modeStats, err := dev.AccountingMode()
 		if err != nil {
 			fmt.Printf("\tdev.DeviceGetAccountingMode() error: %v\n", err)
