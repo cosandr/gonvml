@@ -103,6 +103,13 @@ func main() {
 		}
 		fmt.Printf("\taverage power.draw for last 10s: %v\n", averagePowerDraw)
 
+		powerLimit, err := dev.PowerLimit()
+		if err != nil {
+			fmt.Printf("\tdev.PowerLimit() error: %v\n", err)
+			return
+		}
+		fmt.Printf("\tpower.limit: %d\n", powerLimit)
+
 		averageGPUUtilization, err := dev.AverageGPUUtilization(10 * time.Second)
 		if err != nil {
 			fmt.Printf("\tdev.AverageGPUUtilization() error: %v\n", err)
@@ -173,28 +180,28 @@ func main() {
 
 		modeStats, err := dev.AccountingMode()
 		if err != nil {
-			fmt.Printf("\tdev.DeviceGetAccountingMode() error: %v\n", err)
+			fmt.Printf("\tdev.AccountingMode() error: %v\n", err)
 			return
 		}
 		fmt.Printf("\taccounting.mode enable: %v\n", modeStats)
 
 		bufferSize, err := dev.AccountingBufferSize()
 		if err != nil {
-			fmt.Printf("\tdev.DeviceGetAccountingBufferSize() error: %v\n", err)
+			fmt.Printf("\tdev.AccountingBufferSize() error: %v\n", err)
 			return
 		}
 		fmt.Printf("\taccounting.buffersize: %d\n", bufferSize)
 
 		pids, count, err := dev.AccountingPids(bufferSize)
 		if err != nil {
-			fmt.Printf("\tdev.DeviceGetAccountingPids() error: %v\n", err)
+			fmt.Printf("\tdev.AccountingPids() error: %v\n", err)
 		} else {
 			fmt.Printf("\taccounting.pids.count: %v\n", count)
 			for _, pid := range pids[:count] {
 				fmt.Printf("\t\tPid: %v", pid)
 				stats, err := dev.AccountingStats(uint(pid))
 				if err != nil {
-					fmt.Printf("\tdev.DeviceGetAccountingStats() error: %v\n", err)
+					fmt.Printf("\tdev.AccountingStats() error: %v\n", err)
 				} else {
 					fmt.Printf(", GPUUtilization: %v", stats.GPUUtilization)
 					fmt.Printf(", MemoryUtilization: %v", stats.MemoryUtilization)
@@ -209,11 +216,9 @@ func main() {
 
 		utilizations, err := dev.ProcessUtilization(10, 10*time.Second)
 		if err != nil {
-			fmt.Printf("\tdev.DeviceGetProcessUtilization() error: %v\n", err)
+			fmt.Printf("\tdev.ProcessUtilization() error: %v\n", err)
 		} else {
 			fmt.Printf("\tProcess count: %v\n", len(utilizations))
-
-			utilizations = utilizations
 			for _, sample := range utilizations {
 				fmt.Printf("\t\tProcess: %v", sample.Pid)
 				fmt.Printf(", SM  util: %v", sample.SMUtil)
