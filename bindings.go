@@ -17,6 +17,7 @@ limitations under the License.
 package gonvml
 
 // #cgo LDFLAGS: -ldl
+// #cgo windows LDFLAGS: -L "C:/Program Files/NVIDIA Corporation/NVSMI/"
 /*
 #include <stddef.h>
 #include <dlfcn.h>
@@ -224,7 +225,11 @@ nvmlReturn_t nvmlDeviceGetPowerManagementLimit(nvmlDevice_t device, unsigned int
 // Loads all symbols needed and initializes NVML.
 // Call this before calling any other methods.
 nvmlReturn_t nvmlInit_dl(void) {
+  #ifdef _WIN32
+  nvmlHandle = dlopen("nvml.dll", RTLD_LAZY);
+  #else
   nvmlHandle = dlopen("libnvidia-ml.so.1", RTLD_LAZY);
+  #endif
   if (nvmlHandle == NULL) {
     return NVML_ERROR_LIBRARY_NOT_FOUND;
   }
@@ -423,6 +428,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"runtime"
 	"time"
 )
 
@@ -571,6 +577,9 @@ func DeviceHandleByIndex(idx uint) (Device, error) {
 func (d Device) MinorNumber() (uint, error) {
 	if C.nvmlHandle == nil {
 		return 0, errLibraryNotLoaded
+	}
+	if runtime.GOOS != "linux" {
+		return 0, nil
 	}
 	var n C.uint
 	r := C.nvmlDeviceGetMinorNumber(d.dev, &n)

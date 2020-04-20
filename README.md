@@ -28,3 +28,14 @@ This fork adds the ability to query clock speeds as well, on my 1080 Ti I can ac
 All other values result in either invalid argument or not supported error, quite probable they only work on Quadro or similar.
 
 I've also added PcieThroughput queries.
+
+
+### Notes for Windows
+
+Assuming MinGW64 (MSYS2), if not using its shell then gcc must be in PATH.
+
+- `mingw-w64-x86_64-dlfcn` package
+
+- `nvml.dll` is expected to be in `C:\Program Files\NVIDIA Corporation\NVSMI`, if not copy it from System32 or change LDFLAGS to include System32 instead
+
+- `MinorNumber` is not supported, it will always return 0
